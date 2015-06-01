@@ -92,6 +92,17 @@ function Sync(method, model, opts) {
 			params[reviewdObject.type.toLowerCase() + '_id'] = reviewdObject.id;
 		}
 
+    //change relation field form object to id
+    function isRelationField(key){
+    	var buildInRelationFields = [];//['reviewed_object'];
+    	return /\[(.*)?\]/.test(key) || _.indexOf(buildInRelationFields,key)>-1;
+    }
+    _.each(model.get('custom_fields') || [],function(value,key){
+    	if(isRelationField(key)){ //relation field
+    		model.get('custom_fields')[key] = model.get('custom_fields')[key][0].id;
+    	}
+    });
+
 		object_method.update(params, function(e) {
 			if (e.success) {
 				model.meta = e.meta;
